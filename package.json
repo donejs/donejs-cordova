@@ -1,0 +1,29 @@
+{
+  "name": "donejs-cordova",
+  "version": "0.0.0",
+  "description": "A plugin to add support for Cordova to your DoneJS application",
+  "homepage": "http://donejs.com/",
+  "license": "MIT",
+  "main": "lib",
+  "scripts": {
+    "test": "mocha test/ --timeout 600000",
+    "publish": "git push origin --tags && git push origin",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:donejs/donejs-cordova.git",
+    "github": "https://github.com/donejs/donejs-cordova"
+  },
+  "author": {
+    "name": "Bitovi",
+    "email": "contact@bitovi.com",
+    "web": "http://bitovi.com/"
+  },
+  "keywords": [
+    "DoneJS"
+  ],
+  "dependencies": {}
+}
