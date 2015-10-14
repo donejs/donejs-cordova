@@ -25,6 +25,7 @@
     "DoneJS"
   ],
   "dependencies": {
-    "lodash": "^3.10.1"
+    "lodash": "^3.10.1",
+    "prompt": "^0.2.14"
   }
 }
