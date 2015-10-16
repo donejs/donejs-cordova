@@ -1,4 +1,6 @@
 var generator = require('yeoman-generator');
+var ejs = require('ejs');
+var fs = require('fs');
 
 module.exports = generator.Base.extend({
   prompting: function () {
@@ -19,13 +21,31 @@ module.exports = generator.Base.extend({
     }.bind(this));
   },
   writing: function () {
-    this.fs.copyTpl(
-      this.templatePath('build.js'),
-      this.destinationPath('build.js'),
-      {
-        name: this.config.get('name'),
-        id: this.config.get('id')
-      }
-    );
+    var done = this.async();
+    var outputBuildjs = this.destinationPath('build.js');
+
+    var context = {
+      name: this.config.get('name'),
+      id: this.config.get('id')
+    };
+
+    if (!this.fs.exists(outputBuildjs)) {
+      this.fs.copyTpl(
+        this.templatePath('build.ejs'),
+        outputBuildjs,
+        context
+      );
+      done();
+    } else {
+      fs.readFile(outputBuildjs, 'utf8', function(err, data) {
+        if (data.indexOf('cordovaOptions') < 0) {
+            var cordovaOptionsText = this.fs.read(this.templatePath('cordovaOptions.ejs'), 'utf8');
+            var newContent = data + ejs.render(cordovaOptionsText, context);
+            fs.writeFile(outputBuildjs, newContent, done);
+        } else {
+          done();
+        }
+      }.bind(this));
+    }
   }
 });

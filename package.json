@@ -28,9 +28,11 @@
     "DoneJS"
   ],
   "dependencies": {
+    "ejs": "^2.3.4",
     "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
+    "fs-extra": "^0.24.0",
     "jshint": "^2.8.0",
     "mocha": "^2.3.3"
   }
