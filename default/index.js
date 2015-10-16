@@ -20,6 +20,9 @@ module.exports = generator.Base.extend({
       done();
     }.bind(this));
   },
+  installingStealCordova: function() {
+    this.npmInstall(['steal-cordova'], { 'saveDev': true });
+  },
   writing: function () {
     var done = this.async();
     var outputBuildjs = this.destinationPath('build.js');
