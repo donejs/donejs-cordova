@@ -1,3 +1,4 @@
+// generator-donejs + donejs-cordova build.js
 var stealTools = require("steal-tools");
 
 var buildPromise = stealTools.build({
@@ -8,8 +9,8 @@ var buildPromise = stealTools.build({
 
 var cordovaOptions = {
   buildDir: "./build/cordova",
-  id: "<%= id %>",
-  name: "<%= name %>",
+  id: "com.bar.foo.existing",
+  name: "Existing Foo",
   platforms: ["ios"],
   plugins: ["cordova-plugin-transport-security"],
   index: __dirname + "/production.html",

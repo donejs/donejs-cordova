@@ -1,34 +1,64 @@
-var assert = require('assert');
-var lib = require('../lib');
-var prompt = require('prompt');
-var sinon = require('sinon');
-var fs = require('fs');
+var path = require('path');
+var helpers = require('yeoman-generator').test;
+var assert = require('yeoman-generator').assert;
+var fs = require('fs-extra');
 
 describe('donejs-cordova', function() {
-  it('default export', function(done) {
-    var stub = sinon.stub(prompt, 'get');
-    stub.callsArgWith(1, undefined, {
-      name: 'Foo',
-      id: 'com.bar.foo'
+  describe('when no build.js exists', function() {
+    before(function(done) {
+      helpers.run(path.join(__dirname, '../default'))
+        .withPrompts({
+          name: 'Foo',
+          id: 'com.bar.foo'
+        }).on('end', done);
     });
 
-    var out = lib.default();
+    it('should write build.js', function() {
+      assert.file(['build.js']);
+      assert.fileContent('build.js', /id: "com\.bar\.foo"/);
+      assert.fileContent('build.js', /name: "Foo"/);
+    });
+  });
 
-    assert.ok(typeof out.then === 'function', 'default export returns a promise');
+  describe('when build.js was already created by generator-donejs', function() {
+    before(function(done) {
+      helpers.run(path.join(__dirname, '../default'))
+      .inTmpDir(function(dir) {
+        var done = this.async();
+        fs.copy(path.join(__dirname, 'templates/generator-donejs'), dir, done);
+      })
+      .withPrompts({
+        name: 'Foo',
+        id: 'com.bar.foo'
+      }).on('end', done);
+    });
 
-    out.then(function () {
-      fs.exists('build.js', function(exists) {
-        assert.ok(exists, 'build.js file is created');
+    it('should add cordovaOptions to build.js', function() {
+      assert.file(['build.js']);
+      assert.fileContent('build.js', /generator-donejs build\.js/);
+      assert.fileContent('build.js', /id: "com\.bar\.foo"/);
+      assert.fileContent('build.js', /name: "Foo"/);
+    });
+  });
 
-        fs.readFile('build.js', 'utf8', function(err, data) {
-          assert.ok(data.indexOf('id: "com.bar.foo"') > 0, 'should have correct id');
-          assert.ok(data.indexOf('name: "Foo"') > 0, 'should have correct name');
+  describe('when build.js was already created by generator-donejs and updated by donejs-cordvoa', function() {
+    before(function(done) {
+      helpers.run(path.join(__dirname, '../default'))
+      .inTmpDir(function(dir) {
+        var done = this.async();
+        fs.copy(path.join(__dirname, 'templates/donejs-cordova'), dir, done);
+      })
+      .withPrompts({
+        name: 'Foo',
+        id: 'com.bar.foo'
+      }).on('end', done);
+    });
 
-          fs.unlink('build.js', function() {
-            done();
-          });
-        });
-      });
+    it('should not overwrite build.js', function() {
+      assert.file(['build.js']);
+      assert.fileContent('build.js', /generator-donejs \+ donejs-cordova build\.js/);
+      assert.fileContent('build.js', /id: "com\.bar\.foo\.existing"/);
+      assert.fileContent('build.js', /name: "Existing Foo"/);
     });
   });
 });
