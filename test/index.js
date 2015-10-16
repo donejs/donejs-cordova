@@ -1,22 +1,26 @@
 var assert = require('assert');
-var lib = require('../lib');
 var prompt = require('prompt');
 var sinon = require('sinon');
 var fs = require('fs');
+var path = require('path');
+var yeoman = require('yeoman-environment');
 
 describe('donejs-cordova', function() {
-  it('default export', function(done) {
+  it('default generator', function(done) {
     var stub = sinon.stub(prompt, 'get');
     stub.callsArgWith(1, undefined, {
       name: 'Foo',
       id: 'com.bar.foo'
     });
 
-    var out = lib.default();
+    require('../lib/index');
+    var env = yeoman.createEnv();
+    var fullName = path.join(process.cwd(), 'default');
 
-    assert.ok(typeof out.then === 'function', 'default export returns a promise');
+    env.register(require.resolve(fullName), 'default');
 
-    out.then(function () {
+    assert.ok(true);
+    env.run('default', function() {
       fs.exists('build.js', function(exists) {
         assert.ok(exists, 'build.js file is created');
 
