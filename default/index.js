@@ -1,53 +1,47 @@
-var prompt = require('prompt');
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
 var generator = require('yeoman-generator');
 
-var optionsSchema = {
-    properties: {
-        name: {
-            description: 'Name of project for Cordova:'
-        },
-        id: {
-            description: 'id of project for Cordova:'
-        }
-    }
-};
-
-prompt.message = '';
-prompt.delimiter = '';
-prompt.start();
-
 module.exports = generator.Base.extend({
-  constructor: function() {
-    generator.Base.apply(this, arguments);
+  prompting: function () {
+    var done = this.async();
+    this.prompt([{
+      type    : 'input',
+      name    : 'name',
+      message : 'Name of project for Cordova',
+      default : this.appname // Default to current folder name
+    }, {
+      type    : 'input',
+      name    : 'id',
+      message : 'ID of project for Cordova',
+    }], function (answers) {
+      this.config.set('name', answers.name);
+      this.config.set('id', answers.id);
+      done();
+    }.bind(this));
   },
   end: function() {
     var done = this.async();
+    var self = this;
   
-    prompt.get(optionsSchema, function (err, result) {
-        var id = result.id;
-        var name = result.name;
-  
-        fs.readFile(path.join(__dirname, 'template.js'), 'utf8', function (err, data) {
-            if (err) {
+      fs.readFile(path.join(__dirname, 'template.js'), 'utf8', function (err, data) {
+          if (err) {
+            done();
+          }
+
+          var template = _.template(data);
+          var buildOptions = template({
+            name: self.config.get('name'),
+            id: self.config.get('id')
+          });
+
+          fs.appendFile('build.js', buildOptions, 'utf8', function (err) {
+              if (err) {
+                  done();
+              }
               done();
-            }
-  
-            var template = _.template(data);
-            var buildOptions = template({
-                id: id,
-                name: name
-            });
-  
-            fs.appendFile('build.js', buildOptions, 'utf8', function (err) {
-                if (err) {
-                    done();
-                }
-                done();
-            });
-        });
+          });
     });
   }
 });
