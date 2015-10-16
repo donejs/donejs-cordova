@@ -1,6 +1,3 @@
-var fs = require('fs');
-var path = require('path');
-var _ = require('lodash');
 var generator = require('yeoman-generator');
 
 module.exports = generator.Base.extend({
@@ -21,27 +18,14 @@ module.exports = generator.Base.extend({
       done();
     }.bind(this));
   },
-  end: function() {
-    var done = this.async();
-    var self = this;
-  
-      fs.readFile(path.join(__dirname, 'template.js'), 'utf8', function (err, data) {
-          if (err) {
-            done();
-          }
-
-          var template = _.template(data);
-          var buildOptions = template({
-            name: self.config.get('name'),
-            id: self.config.get('id')
-          });
-
-          fs.appendFile('build.js', buildOptions, 'utf8', function (err) {
-              if (err) {
-                  done();
-              }
-              done();
-          });
-    });
+  writing: function () {
+    this.fs.copyTpl(
+      this.templatePath('build.js'),
+      this.destinationPath('build.js'),
+      {
+        name: this.config.get('name'),
+        id: this.config.get('id')
+      }
+    );
   }
 });
