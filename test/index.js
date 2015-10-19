@@ -9,14 +9,16 @@ describe('donejs-cordova', function() {
       helpers.run(path.join(__dirname, '../default'))
         .withPrompts({
           name: 'Foo',
-          id: 'com.bar.foo'
+          id: 'com.bar.foo',
+          platforms: ['test']
         }).on('end', done);
     });
 
-    it('should write build.js', function() {
+    it('should write build.js and add os specific platforms', function() {
       assert.file(['build.js']);
       assert.fileContent('build.js', /id: "com\.bar\.foo"/);
       assert.fileContent('build.js', /name: "Foo"/);
+      assert.fileContent('build.js', /platforms: \["test"\]/);
     });
   });
 
@@ -29,7 +31,8 @@ describe('donejs-cordova', function() {
       })
       .withPrompts({
         name: 'Foo',
-        id: 'com.bar.foo'
+        id: 'com.bar.foo',
+        platforms: ['test']
       }).on('end', done);
     });
 
@@ -38,6 +41,7 @@ describe('donejs-cordova', function() {
       assert.fileContent('build.js', /generator-donejs build\.js/);
       assert.fileContent('build.js', /id: "com\.bar\.foo"/);
       assert.fileContent('build.js', /name: "Foo"/);
+      assert.fileContent('build.js', /platforms: \["test"\]/);
     });
   });
 
