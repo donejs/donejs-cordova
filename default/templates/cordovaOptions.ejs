@@ -2,7 +2,7 @@ var cordovaOptions = {
   buildDir: "./build/cordova",
   id: "<%= id %>",
   name: "<%= name %>",
-  platforms: ["ios"],
+  platforms: <%- JSON.stringify(platforms) %>,
   plugins: ["cordova-plugin-transport-security"],
   index: __dirname + "/production.html",
   glob: [
