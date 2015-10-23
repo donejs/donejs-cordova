@@ -11,6 +11,7 @@ var is = {
 module.exports = generator.Base.extend({
   prompting: function () {
     var done = this.async();
+
     this.prompt([{
       type    : 'input',
       name    : 'name',
@@ -20,7 +21,7 @@ module.exports = generator.Base.extend({
       type    : 'input',
       name    : 'id',
       message : 'ID of project for Cordova',
-      default: 'com.donejs.' + this.appname.replace(/[\. ,:-]+/g, "-")
+      default: 'com.donejs.' + this.appname.replace(/[\. ,:-]+/g, "")
     }, {
       type: 'checkbox',
       name: 'platforms',
