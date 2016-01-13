@@ -15,5 +15,5 @@ var stealCordova = require("steal-cordova")(cordovaOptions);
 var buildCordova = process.argv.indexOf("cordova") > 0;
 
 if(buildCordova) {
-  buildPromise.then(stealCordova.build).then(stealCordova.ios.emulate);
+  buildPromise.then(stealCordova.build).then(stealCordova.<%= platforms[0] %>.emulate);
 }
