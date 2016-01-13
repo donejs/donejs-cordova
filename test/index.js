@@ -78,7 +78,7 @@ describe('donejs-cordova', function() {
           id: 'com.bar.android',
           platforms: ['android']
         }).on('end', done);
-    })
+    });
     
     it('should write out to launch the android emulator', function() {
       assert.file(['build.js']);
