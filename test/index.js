@@ -65,4 +65,24 @@ describe('donejs-cordova', function() {
       assert.fileContent('build.js', /name: "Existing Foo"/);
     });
   });
+  
+  describe("when android is chosen as the platform", function() {
+    before(function(done){
+        helpers.run(path.join(__dirname, "../default"))
+        .inTmpDir(function(dir){
+          var done = this.async();
+          fs.copy(path.join(__dirname, 'templates/donejs-cordova2'), dir, done);
+        })
+        .withPrompts({
+          name: 'AndroidFoo',
+          id: 'com.bar.android',
+          platforms: ['android']
+        }).on('end', done);
+    });
+    
+    it('should write out to launch the android emulator', function() {
+      assert.file(['build.js']);
+      assert.fileContent('build.js', /android\.emulate/);
+    });
+  });
 });
