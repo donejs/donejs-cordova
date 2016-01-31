@@ -82,13 +82,29 @@ module.exports = generator.Base.extend({
       done();
     } else {
       fs.readFile(outputBuildjs, 'utf8', function(err, data) {
-        if (data.indexOf('cordovaOptions') < 0) {
-            var cordovaOptionsText = this.fs.read(this.templatePath('cordovaOptions.ejs'), 'utf8');
-            var newContent = data + ejs.render(cordovaOptionsText, context);
-            fs.writeFile(outputBuildjs, newContent, done);
+        var commentStartText = this.fs.read(this.templatePath('commentStart.ejs'), 'utf8'),
+            commentEndText = this.fs.read(this.templatePath('commentEnd.ejs'), 'utf8'),
+            cordovaOptionsText = this.fs.read(this.templatePath('cordovaOptions.ejs'), 'utf8'),
+            commentStartIndex = data.indexOf(commentStartText),
+            commentEndIndex = data.indexOf(commentEndText),
+            newContent;
+
+        if (commentStartIndex < 0 && commentEndIndex < 0) {
+          // add nwOptions
+          newContent = data +
+            ejs.render(commentStartText, context) +
+            ejs.render(cordovaOptionsText, context) +
+            ejs.render(commentEndText, context);
         } else {
-          done();
+          // replace existing nwOptions
+          newContent = data.substring(data, commentStartIndex) +
+            ejs.render(commentStartText, context) +
+            ejs.render(cordovaOptionsText, context) +
+            ejs.render(commentEndText, context) +
+            data.substring(commentEndIndex + commentEndText.length);
         }
+
+        fs.writeFile(outputBuildjs, newContent, done);
       }.bind(this));
     }
   }
