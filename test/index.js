@@ -54,15 +54,17 @@ describe('donejs-cordova', function() {
       })
       .withPrompts({
         name: 'Foo',
-        id: 'com.bar.foo'
+        id: 'com.bar.foo',
+        platforms: ['test']
       }).on('end', done);
     });
 
-    it('should not overwrite build.js', function() {
+    it('should replace existing donejs-cordova options', function() {
       assert.file(['build.js']);
       assert.fileContent('build.js', /generator-donejs \+ donejs-cordova build\.js/);
-      assert.fileContent('build.js', /id: "com\.bar\.foo\.existing"/);
-      assert.fileContent('build.js', /name: "Existing Foo"/);
+      assert.fileContent('build.js', /id: "com\.bar\.foo"/);
+      assert.fileContent('build.js', /name: "Foo"/);
+      assert.noFileContent('build.js', /previous cordova options/);
     });
   });
   

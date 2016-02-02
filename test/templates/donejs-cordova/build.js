@@ -7,6 +7,8 @@ var buildPromise = stealTools.build({
   bundleAssets: true
 });
 
+// options added by `donejs add cordova` - START
+// previous cordova options - START
 var cordovaOptions = {
   buildDir: "./build/cordova",
   id: "com.bar.foo.existing",
@@ -26,3 +28,5 @@ var buildCordova = process.argv.indexOf("cordova") > 0;
 if(buildCordova) {
   buildPromise.then(stealCordova.build).then(stealCordova.ios.emulate);
 }
+// previous cordova options - END
+// options added by `donejs add cordova` - END
