@@ -32,26 +32,6 @@ module.exports = generator.Base.extend({
         disabled: !is.macos
       }, {
         name: 'android'
-      }, {
-        name: 'wp8',
-        checked: is.windows,
-        disabled: !is.windows
-      }, {
-        name: 'windows',
-        checked: is.windows,
-        disabled: !is.windows
-      }, {
-        name: 'amazon-fireos'
-      }, {
-        name: 'blackberry10'
-      }, {
-        name: 'Firefox OS'
-      }, {
-        name: 'Ubuntu',
-        checked: is.linux,
-        disabled: !is.linux
-      }, {
-        name: 'tizen'
       }]
     }], function (answers) {
       this.config.set('name', answers.name);
