@@ -10,7 +10,8 @@ describe('donejs-cordova', function() {
         .withPrompts({
           name: 'Foo',
           id: 'com.bar.foo',
-          platforms: ['test']
+          platforms: ['test'],
+          baseURL: 'https://foo.com'
         }).on('end', done);
     });
 
@@ -19,6 +20,29 @@ describe('donejs-cordova', function() {
       assert.fileContent('build.js', /id: "com\.bar\.foo"/);
       assert.fileContent('build.js', /name: "Foo"/);
       assert.fileContent('build.js', /platforms: \["test"\]/);
+    });
+  });
+
+  describe('should update package.json', function() {
+    before(function(done) {
+      helpers.run(path.join(__dirname, '../default'))
+        .inTmpDir(function(dir) {
+          var done = this.async();
+          fs.copy(path.join(__dirname, 'templates/generator-donejs'), dir, function(){
+            fs.copy(path.join(__dirname, 'templates/package-json'), dir, done);
+          });
+        })
+        .withPrompts({
+          name: 'Foo',
+          id: 'com.bar.foo',
+          platforms: ['test'],
+          baseURL: 'https://foo.com'
+        }).on('end', done);
+    });
+
+    it('has correct cordova configuration', function() {
+      assert.file(['package.json']);
+      assert.JSONFileContent('package.json', { steal: { envs: { 'cordova-production': {'serviceBaseURL': 'https://foo.com'}}}});
     });
   });
 
@@ -45,7 +69,7 @@ describe('donejs-cordova', function() {
     });
   });
 
-  describe('when build.js was already created by generator-donejs and updated by donejs-cordvoa', function() {
+  describe('when build.js was already created by generator-donejs and updated by donejs-cordova', function() {
     before(function(done) {
       helpers.run(path.join(__dirname, '../default'))
       .inTmpDir(function(dir) {
@@ -67,7 +91,7 @@ describe('donejs-cordova', function() {
       assert.noFileContent('build.js', /previous cordova options/);
     });
   });
-  
+
   describe("when android is chosen as the platform", function() {
     before(function(done){
         helpers.run(path.join(__dirname, "../default"))
@@ -81,7 +105,7 @@ describe('donejs-cordova', function() {
           platforms: ['android']
         }).on('end', done);
     });
-    
+
     it('should write out to launch the android emulator', function() {
       assert.file(['build.js']);
       assert.fileContent('build.js', /android\.emulate/);

@@ -2,6 +2,7 @@ var fs = require('fs');
 var os = require('os');
 var generator = require('yeoman-generator');
 var ejs = require('ejs');
+var Q = require('q');
 var is = {
   macos: os.platform() === 'darwin',
   linux: os.platform() === 'linux',
@@ -23,6 +24,11 @@ module.exports = generator.Base.extend({
       message : 'ID of project for Cordova',
       default: 'com.donejs.' + this.appname.replace(/[\. ,:-]+/g, "")
     }, {
+      type    : 'input',
+      name    : 'baseURL',
+      message : 'The URL of the service layer',
+      default : undefined
+    }, {
       type: 'checkbox',
       name: 'platforms',
       message: 'What platforms would you like to support (needs SDK installed)',
@@ -37,6 +43,7 @@ module.exports = generator.Base.extend({
       this.config.set('name', answers.name);
       this.config.set('id', answers.id);
       this.config.set('platforms', answers.platforms);
+      this.config.set('baseURL', answers.baseURL);
       done();
     }.bind(this));
   },
@@ -45,6 +52,8 @@ module.exports = generator.Base.extend({
   },
   writing: function () {
     var done = this.async();
+    var buildJsDeferred = Q.defer();
+    var packageJsonDeferred = Q.defer();
     var outputBuildjs = this.destinationPath('build.js');
 
     var context = {
@@ -84,8 +93,40 @@ module.exports = generator.Base.extend({
             data.substring(commentEndIndex + commentEndText.length);
         }
 
-        fs.writeFile(outputBuildjs, newContent, done);
+        fs.writeFile(outputBuildjs, newContent, function(){
+          buildJsDeferred.resolve();
+        });
       }.bind(this));
+
+      // update package.json
+      var packageJson = this.destinationPath('package.json');
+      fs.readFile(packageJson, 'utf8', function(err, data) {
+        var json = data && JSON.parse(data) || {};
+
+        if(this.config.get('baseURL') && json.steal) {
+          json.steal.envs = json.steal.envs || {};
+          var nwEnv = json.steal.envs['cordova-production'];
+          if(!nwEnv) {
+            nwEnv = json.steal.envs['cordova-production'] = {};
+          }
+          nwEnv.serviceBaseURL = this.config.get('baseURL');
+
+          fs.writeFile(packageJson, JSON.stringify(json), function() {
+            packageJsonDeferred.resolve();
+          });
+        } else {
+          packageJsonDeferred.resolve();
+        }
+      }.bind(this));
+
+      // complete writing once build.js and package.json are updated
+      Q.all([
+        buildJsDeferred.promise,
+        packageJsonDeferred.promise
+      ])
+      .then(function() {
+        done();
+      });
     }
   }
 });
