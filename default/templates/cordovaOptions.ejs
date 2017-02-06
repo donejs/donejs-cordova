@@ -5,9 +5,7 @@ var cordovaOptions = {
   platforms: <%- JSON.stringify(platforms) %>,
   plugins: ["cordova-plugin-transport-security"],
   index: __dirname + "/production.html",
-  glob: [
-    "node_modules/steal/steal.production.js"
-  ]
+  glob: []
 };
 
 var stealCordova = require("steal-cordova")(cordovaOptions);
