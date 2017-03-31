@@ -1,6 +1,6 @@
 var fs = require('fs');
 var os = require('os');
-var generator = require('yeoman-generator');
+var Generator = require('yeoman-generator');
 var ejs = require('ejs');
 var Q = require('q');
 var is = {
@@ -9,7 +9,7 @@ var is = {
   windows: os.platform() === 'win32'
 };
 
-module.exports = generator.Base.extend({
+module.exports = Generator.extend({
   prompting: function () {
     var done = this.async();
 
@@ -39,7 +39,7 @@ module.exports = generator.Base.extend({
       }, {
         name: 'android'
       }]
-    }], function (answers) {
+    }]).then(function (answers) {
       this.config.set('name', answers.name);
       this.config.set('id', answers.id);
       this.config.set('platforms', answers.platforms);
