@@ -8,6 +8,7 @@ var is = {
   linux: os.platform() === 'linux',
   windows: os.platform() === 'win32'
 };
+var addRoutingMap = require('donejs-generator-common/routing').addRoutingMap;
 
 module.exports = Generator.extend({
   prompting: function () {
@@ -92,6 +93,8 @@ module.exports = Generator.extend({
             ejs.render(commentEndText, context) +
             data.substring(commentEndIndex + commentEndText.length);
         }
+
+        newContent = addRoutingMap(newContent, data);
 
         fs.writeFile(outputBuildjs, newContent, function(){
           buildJsDeferred.resolve();

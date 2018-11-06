@@ -28,6 +28,7 @@
     "DoneJS"
   ],
   "dependencies": {
+    "donejs-generator-common": "^1.0.5",
     "ejs": "^2.3.4",
     "q": "^1.4.1",
     "yeoman-generator": "^1.1.1"
@@ -36,6 +37,7 @@
     "fs-extra": "^2.1.2",
     "jshint": "^2.8.0",
     "mocha": "^3.2.0",
-    "yeoman-test": "^1.6.0"
+    "yeoman-test": "^1.6.0",
+    "yeoman-assert": "3.1.0"
   }
 }
