@@ -1,7 +1,12 @@
 var path = require('path');
 var helpers = require('yeoman-test');
-var assert = require('assert');
+var assert = require('yeoman-assert');
 var fs = require('fs-extra');
+
+function readFile(filename, json) {
+  var file = fs.readFileSync(filename, 'utf8');
+  return json ? JSON.parse(file) : file;
+}
 
 describe('donejs-cordova', function() {
   describe('when no build.js exists', function() {
@@ -20,6 +25,8 @@ describe('donejs-cordova', function() {
       assert.fileContent('build.js', /id: "com\.bar\.foo"/);
       assert.fileContent('build.js', /name: "Foo"/);
       assert.fileContent('build.js', /platforms: \["test"\]/);
+      assert.fileContent('build.js', /buildCordova/);
+      assert.fileContent('build.js', /map: \(/);
     });
   });
 
@@ -66,6 +73,9 @@ describe('donejs-cordova', function() {
       assert.fileContent('build.js', /id: "com\.bar\.foo"/);
       assert.fileContent('build.js', /name: "Foo"/);
       assert.fileContent('build.js', /platforms: \["test"\]/);
+      assert.fileContent('build.js', /var buildElectron/);
+      assert.fileContent('build.js', /var buildCordova/);
+      assert.fileContent('build.js', /map: \(/);
     });
   });
 
@@ -89,6 +99,39 @@ describe('donejs-cordova', function() {
       assert.fileContent('build.js', /id: "com\.bar\.foo"/);
       assert.fileContent('build.js', /name: "Foo"/);
       assert.noFileContent('build.js', /previous cordova options/);
+      assert.fileContent('build.js', /var buildElectron/);
+      assert.fileContent('build.js', /var buildCordova/);
+      assert.fileContent('build.js', /map: \(/);
+    });
+  });
+
+  describe('when build.js already contains the route mapping', function() {
+    before(function(done) {
+      helpers.run(path.join(__dirname, '..', 'default'))
+        .withPrompts({
+          name: 'Foo',
+          id: 'com.bar.foo',
+          platforms: ['test']
+        })
+        .inTmpDir(function(dir) {
+          var done = this.async();
+          fs.copy(path.join(__dirname, 'templates/donejs-electron-with-map'), dir, done);
+        })
+        .on('end', done);
+    });
+
+    it('should include the map only once', function() {
+      assert.file(['build.js']);
+
+      var file = readFile('build.js');
+      var exp = /map: \(/g;
+      var mappings = 0;
+
+      while(exp.exec(file)) {
+        mappings++;
+      }
+
+      assert.equal(mappings, 1, "There is only one mapping");
     });
   });
 
