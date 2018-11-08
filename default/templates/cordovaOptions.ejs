@@ -9,8 +9,6 @@ var cordovaOptions = {
 };
 
 var stealCordova = require("steal-cordova")(cordovaOptions);
-// Check if the cordova option is passed.
-var buildCordova = process.argv.indexOf("cordova") > 0;
 
 if(buildCordova) {
   buildPromise.then(stealCordova.build).then(stealCordova.<%= platforms[0] %>.emulate);
