@@ -1,6 +1,6 @@
 {
   "name": "donejs-cordova",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A plugin to add support for Cordova to your DoneJS application",
   "homepage": "http://donejs.com/",
   "license": "MIT",
